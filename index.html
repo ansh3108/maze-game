@@ -1,1 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Canvas Maze Game</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        #heading {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: xx-large;
+        }
+        #canvas { background: #99afa3; display: block; margin: 0 auto; }
+        #c { background: #eeeeee; display: block; margin: 0 auto; }
+        #timerel { background: #eeeeee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+<section>
+    <div id="wrapper">
+        <h1 id="heading">Lost Path</h1>
+        <div id="maze">
+            <p style="text-align: center;margin-bottom: 10px">Find the way out of Maze in 30 seconds!</p>
+            <div id="c" style="text-align: center;width: 10%;font-size: large"></div>
+            <canvas id="canvas" width="523" height="523">
+                This text is displayed if your browser does not support HTML5 Canvas.
+            </canvas>
+            <div id="timerel" style="text-align: center;width: 15%;font-size: large"></div>
+        </div>
+    </div>
+</section>
 
+<script type="text/javascript">
+    function startTimer(duration, display) {
+        var start = Date.now(),
+            diff,
+            minutes,
+            seconds;
+
+        function timer() {
+            diff = duration - (((Date.now() - start) / 1000) | 0);
+            minutes = (diff / 60) | 0;
+            seconds = (diff % 60) | 0;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = "Game ends in " + minutes + ":" + seconds;
+
+            if (diff <= 0) {
+                display.textContent = "Game Over";
+                start = Date.now() + 1000;
+            }
+        }
+        timer();
+        setInterval(timer, 1000);
+    }
+
+    window.onload = function () {
+        var twominutes = 30;
+        var x = document.querySelector("#timerel");
+        startTimer(twominutes, x);
+    }
+
+    var maze = function (X, Y) {
+        this.N = X;
+        this.M = Y;
+        this.S = 25;
+        this.Board = new Array(2 * this.N + 1);
+        this.init = function () {
+            for (var i = 0; i < 2 * this.N + 1; i++) {
+                this.Board[i] = new Array(2 * this.M + 1);
+                for (var j = 0; j < 2 * this.M + 1; j++) {
+                    this.Board[i][j] = (i % 2 === 0 || j % 2 === 0) ? '#' : ' ';
+                }
+            }
+        };
+        this.draw_canvas = function (id) {
+            this.canvas = document.getElementById(id);
+            if (this.canvas.getContext) {
+                this.ctx = this.canvas.getContext('2d');
+                var scale = this.S;
+                for (var i = 0; i < 2 * this.N + 1; i++) {
+                    for (var j = 0; j < 2 * this.M + 1; j++) {
+                        if (this.Board[i][j] === '#') {
+                            this.ctx.fillStyle = "#0b052d";
+                            this.ctx.fillRect(scale * j, scale * i, scale, scale);
+                        }
+                    }
+                }
+            }
+        };
+    };
+
+    var m = new maze(10, 10);
+    m.init();
+    m.draw_canvas("canvas");
+</script>
+</body>
+</html>
